@@ -32,71 +32,103 @@
       display:flex;flex-direction:column;background:var(--bg);
       -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
       text-rendering:optimizeLegibility; font-kerning:normal;
-    }
-    .sharp-text{
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      text-rendering:geometricPrecision;
+      overflow-x:hidden;
     }
 
-    /* Franja superior (ticker) */
-    .moving-strip{width:100%;height:var(--strip-height);background:linear-gradient(to bottom,#e9e9e98c 0%,#ffffff 100%);overflow:hidden;position:relative;flex:0 0 var(--strip-height);}
-    .scroll-text{position:absolute;top:0;left:0;white-space:nowrap;display:inline-block;padding:0 .75rem;color:var(--brand);line-height:var(--strip-height);will-change:transform;visibility:hidden;transform:translateX(var(--start,0px));animation:marqueePx var(--strip-speed) linear infinite;}
+    /* Ticker superior */
+    .moving-strip{
+      width:100%;height:var(--strip-height);
+      background:linear-gradient(to bottom,#e9e9e98c 0%,#ffffff 100%);
+      overflow:hidden;position:relative;flex:0 0 var(--strip-height);
+    }
+    .scroll-text{
+      position:absolute;top:0;left:0;white-space:nowrap;display:inline-block;
+      padding:0 .75rem;color:var(--brand);line-height:var(--strip-height);
+      will-change:transform;visibility:hidden;transform:translateX(var(--start,0px));
+      animation:marqueePx var(--strip-speed) linear infinite;
+    }
     @keyframes marqueePx{from{transform:translateX(var(--start));}to{transform:translateX(var(--end));}}
 
-    /* Layout principal: sidebar izquierda + main derecha */
-    .container{flex:1 1 auto;min-height:0;padding:12px 24px 20px;box-sizing:border-box;display:grid;grid-template-columns: 340px 1fr;gap:14px;max-width:1100px;margin:0 auto;width:100%;}
-    @media (max-width:880px){ .container{grid-template-columns:1fr;} }
+    /* ====== Layout principal: izquierda (sidebar) + centro (libre) + derecha (econ) ====== */
+    .container{
+      flex:1 1 auto;min-height:0;
+      padding:10px 20px 20px;
+      box-sizing:border-box;display:grid;
+      grid-template-columns: 340px 1fr 260px; /* derecha compacta */
+      gap:10px;
+      max-width:none;margin:0;width:100%;
+    }
+    @media (max-width:1000px){ .container{grid-template-columns: 320px 1fr; } .right-rail{grid-column: 1 / -1; } }
+    @media (max-width:720px){ .container{grid-template-columns: 1fr; } }
 
-    /* Tarjetas / paneles */
-    .card{border:1px solid var(--border);border-radius:10px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.06);padding:12px;}
+    /* Paneles izquierda */
     .panel{border:1px solid var(--border);border-radius:8px;background:#fff;padding:10px;}
-    .panel h4{margin:0 0 6px;font-size:12px}
+    .panel h4{margin:0 0 6px;font-size:11px}
     .list{margin:0;padding-left:16px}.list li{margin:3px 0}
+    .news-list{max-height:260px;overflow:auto}
+    .sidebar{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
 
-    /* Sidebar: pilas una sobre otra, tamaño reducido */
-    .sidebar{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+    /* ====== Derecha: Minuto Económico (vertical, pequeño) ====== */
+    .right-rail{display:block}
+    .rail-inner{position:sticky; top:10px;}
+    .econ-mini{display:flex; flex-direction:column; gap:8px;}
 
-    /* Reproductor */
-    .player-card{max-width:760px;width:100%;justify-self:start}
-    .title-bar{margin:4px 0 10px;font-size:12px;text-align:center;font-weight:700}
-    .player{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
-    .play-btn{width:52px;height:52px;border-radius:50%;border:1px solid var(--border);display:grid;place-items:center;cursor:pointer;background:#f9f9ff}
-    .play-btn:hover{background:#eef2ff}
-    .meta{min-height:28px;display:flex;flex-direction:column;justify-content:center;gap:2px}
-    .title{font-weight:600}
-    .subtitle{opacity:.75}
-    .actions{display:flex;align-items:center;gap:8px}
-    .controls{display:flex;align-items:center;gap:8px;justify-content:center;margin-top:8px}
-    .range{-webkit-appearance:none;width:160px;height:4px;background:#e5e5e5;border-radius:999px;outline:none}
-    .range::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#3b5bff;cursor:pointer}
-
-    /* Bloque “Notas” */
-    .notas-ssi{font-family:var(--font-family-base);font-size:var(--font-size-base);background:#fff;border:1px solid var(--border);border-radius:3px;margin:8px 24px 10px;overflow:hidden;max-width:1100px;width:calc(100% - 48px);align-self:center}
-    .notas-ssi .head{background:linear-gradient(#fffaf0,#fff5e1);color:#b25a00;font-weight:bold;padding:3px 8px;border-bottom:1px solid #e6d3a7}
-    .notas-ssi .body{padding:6px 8px}
-    .notas-ssi a{color:var(--brand);text-decoration:underline}
-
-    .rights{text-align:center;font-size:11px;color:#a0a0a0;margin:4px 24px 24px}
-
-    /* Badge mini 4pl3 desplegable (esquina inferior izq.) */
-    .brand-badge{
-      position:fixed;left:10px;bottom:10px;z-index:9999;
-      font-family:var(--font-family-base);font-size:11px;
+    .econ-card{
+      background:#fff; border:1px solid var(--border); border-radius:8px;
+      padding:8px; display:flex; flex-direction:column; gap:6px;
     }
-    .brand-badge summary{
-      list-style:none;cursor:pointer;outline:none;border:none;
-    }
-    .brand-badge summary::-webkit-details-marker{display:none}
-    .badge{
-      width:28px;height:28px;border-radius:50%;
-      display:grid;place-items:center;background:radial-gradient(circle at 30% 30%,#a0b6ff,#3b5bff);
-      color:#fff;font-weight:700;letter-spacing:.2px;box-shadow:0 2px 6px rgba(0,0,0,.2);
-    }
-    .brand-pop{
-      margin-top:6px;background:#fff;border:1px solid var(--border);border-radius:8px;padding:6px 8px;box-shadow:0 2px 10px rgba(0,0,0,.15);
-    }
+    .econ-card h3{ margin:0; font-weight:700; font-size:10px; color:#555; }
+    .econ-stat{ display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;}
+    .econ-stat .item{ min-width:90px; display:flex; flex-direction:column; gap:1px; }
+    .econ-stat .item span{ font-size:10px; color:#777; }
+    .econ-stat .item strong{ font-size:14px; letter-spacing:.2px; }
+    .econ-delta{ font-size:10px; color:#777; }
+    .econ-delta .up{ color:#0d8a4e; font-weight:700; }
+    .econ-delta .down{ color:#c93030; font-weight:700; }
+    .spark{ width:100%; height:22px; }
+    .spark path{ fill:none; stroke:#3b5bff; stroke-width:1.6; }
+    .src{ color:#777; font-size:10px; text-decoration:none; }
 
+    .econ-upd{font-size:10px;color:#777;text-align:right;margin-top:2px}
+
+    /* Conversor mini */
+    .conv-row{ display:flex; gap:6px; align-items:center; }
+    .conv-input{ width:100%; font:inherit; padding:4px; border:1px solid var(--border); border-radius:6px; }
+    .conv-out{ font-weight:700; font-size:12px; }
+    .hint{ font-size:10px; color:#777; }
+
+    /* === Reproductor mini fijo (abajo-derecha) === */
+    .radio{
+      position:fixed; right:10px; bottom:10px;
+      width:210px;
+      border:1px solid var(--border);
+      border-radius:10px;
+      background:#fff;
+      box-shadow:0 2px 10px rgba(0,0,0,.12);
+      overflow:hidden; z-index:1000;
+    }
+    .radio .head{
+      display:flex; align-items:center; gap:6px;
+      padding:6px 8px; cursor:pointer; user-select:none;
+      background:linear-gradient(#fff, #f7f7f7);
+      border-bottom:1px solid var(--border);
+    }
+    .radio .title{font-size:11px;margin:0;font-weight:700}
+    .chev{margin-left:auto; opacity:.8}
+    .radio .body{display:none; padding:8px; background:#fff}
+    .radio.open .body{display:block}
+    .row{display:grid; grid-template-columns: auto 1fr auto; gap:6px; align-items:center}
+    .play{width:34px;height:34px;border-radius:999px;border:1px solid var(--border);display:grid;place-items:center;cursor:pointer;background:#f7f8ff}
+    .play:hover{background:#eef2ff}
+    .sub{opacity:.75}
+    .ctrls{display:flex;gap:6px;align-items:center;margin-top:6px;justify-content:center}
+    .range{-webkit-appearance:none;width:120px;height:4px;background:#e5e5e5;border-radius:999px;outline:none}
+    .range::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;border-radius:50%;background:#3b5bff;cursor:pointer}
+    .mini{font-size:10px;opacity:.7;margin-top:4px}
+
+    .rights{text-align:center;font-size:11px;color:#a0a0a0;margin:4px 6px 16px}
+
+    /* Font face pedido */
     @font-face{font-family:"Arial-BoldMT";src:local("Arial");font-weight:400;font-style:normal;font-display:swap}
     @font-face{font-family:"Arial-BoldMT";src:local("Arial Bold"),local("Arial");font-weight:700;font-style:normal;font-display:swap}
   </style>
@@ -108,7 +140,7 @@
   </div>
 
   <div class="container">
-    <!-- Izquierda: Programación y Atajos (uno sobre otro, tamaño reducido) -->
+    <!-- IZQUIERDA -->
     <aside class="sidebar">
       <div class="panel">
         <h4>Programación (referencial)</h4>
@@ -130,66 +162,115 @@
         </ul>
         <div style="opacity:.7;margin-top:6px">Por políticas del navegador, el audio con sonido necesita un clic del usuario.</div>
       </div>
+
+      <!-- Noticias (lista) -->
+      <div class="panel" id="newsPanel">
+        <h4>Noticias</h4>
+        <ul class="list news-list" id="newsList">
+          <li>Cargando noticias…</li>
+        </ul>
+      </div>
     </aside>
 
-    <!-- Derecha: reproductor -->
-    <main class="player-card card" role="region" aria-label="Reproductor de 4pl3 Radio">
-      <div class="title-bar sharp-text">4pl3 RADIO — SEÑAL EN VIVO</div>
+    <!-- CENTRO: (libre para lo que hagas luego) -->
+    <main id="area-libre"></main>
 
-      <div class="player">
-        <button id="btnPlay" class="play-btn" aria-label="Reproducir/Pausar">
-          <i class="fa-solid fa-play"></i>
-        </button>
+    <!-- DERECHA: Minuto Económico (pequeño, uno sobre otro) -->
+    <aside class="right-rail">
+      <div class="rail-inner">
+        <div class="econ-mini" id="econ-mini">
 
-        <div class="meta">
-          <div class="title" id="npTitle">En vivo</div>
-          <div class="subtitle" id="npSub">Pulsa Play para iniciar</div>
-        </div>
+          <!-- USD -->
+          <article class="econ-card" id="card-usd">
+            <h3>Dólar SBS</h3>
+            <div class="econ-stat">
+              <div class="item"><span>Compra</span><strong id="usd-compra">—</strong></div>
+              <div class="item"><span>Venta</span><strong id="usd-venta">—</strong></div>
+            </div>
+            <div class="econ-delta" id="usd-delta">Variación diaria: —</div>
+            <svg class="spark" id="usd-spark" viewBox="0 0 120 22" role="img" aria-label="Tendencia del dólar"></svg>
+            <a class="src" href="https://estadisticas.bcrp.gob.pe/estadisticas/series/diarias/tipo-de-cambio" target="_blank" rel="noopener">Fuente BCRP</a>
+          </article>
 
-        <div class="actions">
-          <button class="btn" id="btnStop" title="Detener" aria-label="Detener"><i class="fa-solid fa-stop"></i></button>
-          <button class="btn" id="btnMute" title="Silenciar" aria-label="Silenciar"><i class="fa-solid fa-volume-xmark"></i></button>
+          <!-- INFLACIÓN 12M -->
+          <article class="econ-card" id="card-inflacion">
+            <h3>Inflación 12 meses (Lima)</h3>
+            <div class="econ-stat">
+              <div class="item"><span>Variación anual</span><strong id="inf-12m">—</strong></div>
+            </div>
+            <svg class="spark" id="inf-spark" viewBox="0 0 120 22" role="img" aria-label="Tendencia inflación 12 meses"></svg>
+            <a class="src" href="https://estadisticas.bcrp.gob.pe/estadisticas/series/mensuales/inflacion" target="_blank" rel="noopener">Fuente BCRP</a>
+          </article>
+
+          <!-- TASA -->
+          <article class="econ-card" id="card-tasa">
+            <h3>Tasa de referencia BCRP</h3>
+            <div class="econ-stat">
+              <div class="item"><span>Política monetaria</span><strong id="tasa-ref">—</strong></div>
+            </div>
+            <svg class="spark" id="tasa-spark" viewBox="0 0 120 22" role="img" aria-label="Tendencia tasa de referencia"></svg>
+            <a class="src" href="https://estadisticas.bcrp.gob.pe/estadisticas/series/mensuales/resultados/PD04722MM/html" target="_blank" rel="noopener">Fuente BCRP</a>
+          </article>
+
+          <!-- CONVERSOR MINI -->
+          <article class="econ-card" id="card-conversor">
+            <h3>Conversor S/ ↔ US$</h3>
+            <div class="conv-row">
+              <input id="conv-monto" class="conv-input" type="number" step="0.01" min="0" placeholder="0.00">
+            </div>
+            <div class="conv-row">
+              <button id="conv-soles"  class="play" style="width:auto;height:auto;padding:2px 8px">S/ → $</button>
+              <button id="conv-dolares" class="play" style="width:auto;height:auto;padding:2px 8px">$ → S/</button>
+            </div>
+            <div class="conv-out" id="conv-resultado">Resultado: —</div>
+            <div class="hint">Usa <em>venta</em> para S/→$, y <em>compra</em> para $→S/.</div>
+          </article>
+
+          <div class="econ-upd" id="econ-updated">Actualizado: —</div>
         </div>
       </div>
+    </aside>
+  </div>
 
-      <div class="controls">
+  <!-- Reproductor mini fijo abajo-derecha (cerrado por defecto) -->
+  <div id="radioBox" class="radio">
+    <div class="head" id="radioToggle">
+      <div class="title">Radio en vivo</div>
+      <i class="fa-solid fa-chevron-down chev"></i>
+    </div>
+    <div class="body">
+      <div class="row">
+        <button id="btnPlay" class="play" aria-label="Reproducir/Pausar"><i class="fa-solid fa-play"></i></button>
+        <div>
+          <div id="npTitle" style="font-weight:600">En vivo</div>
+          <div id="npSub" class="sub">Pulsa Play para iniciar</div>
+        </div>
+        <div>
+          <button id="btnStop" title="Detener" aria-label="Detener"><i class="fa-solid fa-stop"></i></button>
+          <button id="btnMute" title="Silenciar" aria-label="Silenciar"><i class="fa-solid fa-volume-xmark"></i></button>
+        </div>
+      </div>
+      <div class="ctrls">
         <i class="fa-solid fa-volume-low" aria-hidden="true"></i>
         <input id="vol" class="range" type="range" min="0" max="1" step="0.01" value="0.9" aria-label="Volumen" />
         <i class="fa-solid fa-volume-high" aria-hidden="true"></i>
       </div>
-
+      <div class="mini">Si no suena, revisa tu URL de stream o CORS del servidor.</div>
       <audio id="radio" preload="none" crossorigin="anonymous"></audio>
-    </main>
-  </div>
-
-  <!-- Notas (opcional) -->
-  <div class="notas-ssi sharp-text" id="notaSsi">
-    <div class="head">Notas</div>
-    <div class="body">
-      <ul>
-        <li>Reemplaza <code>STREAM_URL</code> con la URL de tu servidor (Icecast/Shoutcast/HLS).</li>
-        <li>Si usas Icecast, puedes configurar <code>METADATA_URL</code> (p.ej. <code>https://tu-servidor/status-json.xsl</code>) para mostrar “Ahora suena”.</li>
-        <li>Autoplay: el navegador bloquea reproducción con sonido hasta que el usuario interactúa.</li>
-      </ul>
     </div>
   </div>
 
   <div class="rights">© <span id="year"></span> 4pl3 Radio — Todos los derechos reservados.</div>
 
-  <!-- Badge mini 4pl3 desplegable -->
-  <details class="brand-badge">
-    <summary class="badge" aria-label="4pl3">4pl3</summary>
-    <div class="brand-pop">4pl3 Radio</div>
-  </details>
-
   <script>
-    /* ========== CONFIG ==========
-       CAMBIA esto por tu stream real (mp3/aac/ogg o .m3u8) */
-    const STREAM_URL   = "https://your-stream.example.com/stream.mp3"; // <<— REEMPLAZAR
-    // (Opcional, Icecast): JSON de estado para “Ahora suena”
-    const METADATA_URL = ""; // p.ej.: "https://tu-icecast/status-json.xsl"
+    /* ======= CONFIG AUDIO ======= */
+    const STREAM_URL   = "https://your-stream.example.com/stream.mp3"; // <<— PON AQUÍ TU STREAM (https)
+    const METADATA_URL = ""; // Opcional (Icecast): "https://tu-icecast/status-json.xsl"
 
-    // ===== Marquee =====
+    /* ======= CONFIG NOTICIAS ======= */
+    const GNEWS_API_KEY = ""; // ej.: "1234567890abcdef..."
+
+    /* ===== Ticker ===== */
     (function initTicker(){
       const el = document.getElementById('ticker');
       const wrapW = el.parentElement.clientWidth;
@@ -201,7 +282,17 @@
       el.style.visibility = 'visible';
     })();
 
-    // ===== Player =====
+    /* ===== Player (mini fijo) ===== */
+    const radioBox = document.getElementById('radioBox');
+    const radioToggle = document.getElementById('radioToggle');
+
+    radioToggle.addEventListener('click', ()=>{
+      radioBox.classList.toggle('open');
+      const chev = radioToggle.querySelector('.chev');
+      chev.classList.toggle('fa-chevron-up');
+      chev.classList.toggle('fa-chevron-down');
+    });
+
     const audio   = document.getElementById('radio');
     const btnPlay = document.getElementById('btnPlay');
     const btnStop = document.getElementById('btnStop');
@@ -211,44 +302,23 @@
     const npSub   = document.getElementById('npSub');
 
     let loaded = false;
-    function ensureSrc(){
-      if (loaded) return;
-      audio.src = STREAM_URL;
-      loaded = true;
-    }
+    function ensureSrc(){ if (!loaded){ audio.src = STREAM_URL; loaded = true; } }
 
     btnPlay.addEventListener('click', async () => {
       ensureSrc();
       if (audio.paused) {
-        try {
-          await audio.play();
-          btnPlay.innerHTML = '<i class="fa-solid fa-pause"></i>';
-          npSub.textContent = 'Reproduciendo…';
-        } catch (e) {
-          npSub.textContent = 'Pulsa Play para iniciar';
-          console.error(e);
-        }
-      } else {
-        audio.pause();
-        btnPlay.innerHTML = '<i class="fa-solid fa-play"></i>';
-        npSub.textContent = 'Pausado';
-      }
+        try { await audio.play(); btnPlay.innerHTML = '<i class="fa-solid fa-pause"></i>'; npSub.textContent = 'Reproduciendo…'; }
+        catch (e) { npSub.textContent = 'Pulsa Play para iniciar'; console.error(e); }
+      } else { audio.pause(); btnPlay.innerHTML = '<i class="fa-solid fa-play"></i>'; npSub.textContent = 'Pausado'; }
     });
-
     btnStop.addEventListener('click', () => {
-      audio.pause();
-      audio.removeAttribute('src');
-      audio.load();
-      loaded = false;
-      btnPlay.innerHTML = '<i class="fa-solid fa-play"></i>';
-      npSub.textContent = 'Detenido';
+      audio.pause(); audio.removeAttribute('src'); audio.load(); loaded = false;
+      btnPlay.innerHTML = '<i class="fa-solid fa-play"></i>'; npSub.textContent = 'Detenido';
     });
-
     btnMute.addEventListener('click', () => {
       audio.muted = !audio.muted;
       btnMute.innerHTML = audio.muted ? '<i class="fa-solid fa-volume-xmark"></i>' : '<i class="fa-solid fa-volume-high"></i>';
     });
-
     vol.addEventListener('input', e => { audio.volume = +e.target.value; });
     audio.volume = +vol.value;
 
@@ -257,7 +327,6 @@
     audio.addEventListener('stalled', () => { npSub.textContent = 'Reconectando…'; });
     audio.addEventListener('error', () =>   { npSub.textContent = 'Error de reproducción'; });
 
-    // ===== Now Playing (Icecast opcional) =====
     async function fetchNowPlaying(){
       if (!METADATA_URL) return;
       try{
@@ -269,10 +338,171 @@
         const s = arr.find(o => (o.listener_peak !== undefined));
         const title = s?.title || s?.server_name || 'En vivo';
         npTitle.textContent = title;
-      }catch(e){ /* silencioso */ }
+      }catch(e){ /* silent */ }
     }
     setInterval(fetchNowPlaying, 15000);
     fetchNowPlaying();
+
+    // ===== Noticias (lista) =====
+    function escapeHtml(s){return s.replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;' }[m]));}
+    async function fetchNews(){
+      const list = document.getElementById('newsList');
+      const demo = [
+        { title: "Demo: 4pl3 lanza su sitio de radio", link: "#"},
+        { title: "Cómo escuchar 4pl3 en tu celular", link: "#"},
+        { title: "Programación de hoy en 4pl3", link: "#" }
+      ];
+      try{
+        let items = [];
+
+        if (GNEWS_API_KEY){
+          const url = `https://gnews.io/api/v4/top-headlines?lang=es&country=pe&max=8&apikey=${encodeURIComponent(GNEWS_API_KEY)}`;
+          const r = await fetch(url, {cache:'no-store'});
+          if (r.ok){
+            const j = await r.json();
+            items = (j.articles||[]).map(a => ({title:a.title, link:a.url}));
+          }
+        }
+
+        if (!items.length){
+          const rss = 'https://news.google.com/rss?hl=es-419&gl=PE&ceid=PE:es-419';
+          const url = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rss);
+          const r = await fetch(url, {cache:'no-store'});
+          if (r.ok){
+            const j = await r.json();
+            items = (j.items||[]).slice(0,8).map(it => ({title:it.title, link:it.link}));
+          }
+        }
+
+        if(!items.length){ items = demo; }
+
+        list.innerHTML = items
+          .map(i => `<li><a href="${i.link}" target="_blank" rel="noopener">${escapeHtml(i.title)}</a></li>`)
+          .join('');
+      }catch(e){
+        console.error(e);
+        list.innerHTML = '<li>Error cargando noticias.</li>';
+      }
+    }
+    fetchNews();
+    setInterval(fetchNews, 15 * 60 * 1000); // cada 15 min
+
+    // ======= MINUTO ECONÓMICO (auto, sin botones) =======
+    (function(){
+      // Series BCRP (diaria/mensual)
+      const SERIES = {
+        usdCompra: 'PD04639PD', // TC SBS - Compra (diaria)
+        usdVenta:  'PD04640PD', // TC SBS - Venta (diaria)
+        infl12m:   'PN01273PM', // IPC Lima Metropolitana - variación 12 meses (mensual)
+        tasaRef:   'PD04722MM'  // Tasa de Referencia (mensual)
+      };
+
+      const API = (code, fmt='json', from='', to='') => {
+        const parts = ['https://estadisticas.bcrp.gob.pe/estadisticas/series/api', code, fmt];
+        if (from) parts.push(from);
+        if (to) parts.push(to);
+        return parts.join('/');
+      };
+
+      async function getJSON(url){
+        const r = await fetch(url, {cache:'no-store'});
+        if(!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      }
+      // Fallback proxy (CORS)
+      async function getViaProxy(url){
+        const prox = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+        const r = await fetch(prox, {cache:'no-store'});
+        if(!r.ok) throw new Error('Proxy HTTP ' + r.status);
+        return r.json();
+      }
+      async function getSeries(code){
+        const url = API(code, 'json');
+        try { return await getJSON(url); }
+        catch(e){ return await getViaProxy(url); }
+      }
+
+      function format(value, decimals=3){
+        const v = Number(value);
+        if (!isFinite(v)) return '—';
+        return v.toLocaleString('es-PE', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+      }
+
+      function sparkline(svg, arr){
+        const W = 120, H = 22, PAD = 2;
+        const xs = arr.map((_,i)=> PAD + i * ((W-2*PAD)/(arr.length-1 || 1)));
+        const min = Math.min(...arr), max = Math.max(...arr);
+        const ys = arr.map(v => (max===min) ? H/2 : (H - PAD - ((v-min)/(max-min)) * (H-2*PAD)));
+        const d = arr.reduce((p,_,i)=> p + (i?` L ${xs[i]} ${ys[i]}`:`M ${xs[0]} ${ys[0]}`), '');
+        svg.innerHTML = `<path d="${d}"></path>`;
+      }
+
+      function lastN(arr, n=30){ return arr.slice(-n); }
+
+      async function loadAll(){
+        try{
+          // USD
+          const [usdC, usdV] = await Promise.all([ getSeries(SERIES.usdCompra), getSeries(SERIES.usdVenta) ]);
+          const decUsd = Number(usdV?.config?.series?.[0]?.dec ?? 3);
+          const pC = usdC.periods; const pV = usdV.periods;
+
+          const lastCompra = Number(pC.at(-1)?.values?.[0]);
+          const prevVenta  = Number(pV.at(-2)?.values?.[0]);
+          const lastVenta  = Number(pV.at(-1)?.values?.[0]);
+
+          document.getElementById('usd-compra').textContent = 'S/ ' + format(lastCompra, decUsd);
+          document.getElementById('usd-venta').textContent  = 'S/ ' + format(lastVenta,  decUsd);
+
+          const delta = (isFinite(lastVenta) && isFinite(prevVenta)) ? (lastVenta - prevVenta) : NaN;
+          const cls = delta > 0 ? 'up' : delta < 0 ? 'down' : '';
+          document.getElementById('usd-delta').innerHTML = `Variación diaria: <span class="${cls}">${isFinite(delta) ? (delta>0?'+':'') + format(delta, 3) : '—'}</span>`;
+
+          const serieVenta = lastN(pV.map(x => Number(x.values[0])).filter(Number.isFinite), 30);
+          sparkline(document.getElementById('usd-spark'), serieVenta);
+
+          // Inflación
+          const infl = await getSeries(SERIES.infl12m);
+          const decInf = Number(infl?.config?.series?.[0]?.dec ?? 2);
+          const inflVals = infl.periods.map(x => Number(x.values[0])).filter(Number.isFinite);
+          const inflLast = inflVals.at(-1);
+          document.getElementById('inf-12m').textContent = (isFinite(inflLast) ? format(inflLast, decInf) + ' %' : '—');
+          sparkline(document.getElementById('inf-spark'), lastN(inflVals, 24));
+
+          // Tasa
+          const tasa = await getSeries(SERIES.tasaRef);
+          const decTasa = Number(tasa?.config?.series?.[0]?.dec ?? 2);
+          const tasaVals = tasa.periods.map(x => Number(x.values[0])).filter(Number.isFinite);
+          const tasaLast = tasaVals.at(-1);
+          document.getElementById('tasa-ref').textContent = (isFinite(tasaLast) ? format(tasaLast, decTasa) + ' %' : '—');
+          sparkline(document.getElementById('tasa-spark'), lastN(tasaVals, 24));
+
+          // etiqueta de actualizado (usa fecha del último dato de venta)
+          const lastLabel = (usdV.periods.at(-1)?.name ?? '—');
+          document.getElementById('econ-updated').textContent = 'Actualizado: ' + lastLabel;
+
+          // Conversor
+          const venta = lastVenta, compra = lastCompra;
+          const monto = document.getElementById('conv-monto');
+          document.getElementById('conv-soles').onclick  = () => {
+            const v = Number(monto.value);
+            document.getElementById('conv-resultado').textContent = (!isFinite(v) || !isFinite(venta)) ? 'Resultado: —' : ('Resultado: $ ' + format(v / venta, 2));
+          };
+          document.getElementById('conv-dolares').onclick = () => {
+            const v = Number(monto.value);
+            document.getElementById('conv-resultado').textContent = (!isFinite(v) || !isFinite(compra)) ? 'Resultado: —' : ('Resultado: S/ ' + format(v * compra, 2));
+          };
+
+        }catch(e){
+          console.error(e);
+          document.getElementById('econ-updated').textContent = 'No se pudo conectar a la API del BCRP.';
+        }
+      }
+
+      // Auto-actualiza: al cargar, al volver a la pestaña y cada 3 minutos
+      loadAll();
+      document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) loadAll(); });
+      setInterval(loadAll, 180000);
+    })();
 
     // Util
     document.getElementById('year').textContent = new Date().getFullYear();
