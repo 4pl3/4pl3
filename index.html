@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mapples Radio — en vivo</title>
+
+  <!-- NO CACHÉ -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <!-- Libs -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root{
+      --font-family-base:"Arial-BoldMT",Arial,Helvetica,sans-serif;
+      --font-size-base:11px;
+      --strip-height:22px;
+      --strip-speed:26s;
+      --brand:#0000ee;
+      --border:#c6c6c6;
+      --bg:#ffffff;
+    }
+
+    html,body{height:100%;margin:0}
+    body{
+      font-family:var(--font-family-base);
+      font-size:var(--font-size-base);
+      display:flex;flex-direction:column; background:var(--bg);
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      text-rendering:optimizeLegibility; font-kerning:normal;
+    }
+    .sharp-text{ -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: geometricPrecision; }
+
+    /* Franja superior tipo SSPI */
+    .moving-strip{ width:100%; height:var(--strip-height); background:linear-gradient(to bottom,#e9e9e98c 0%,#ffffff 100%); overflow:hidden; position:relative; flex:0 0 var(--strip-height); }
+    .scroll-text{ position:absolute; top:0; left:0; white-space:nowrap; display:inline-block; padding:0 .75rem; color:var(--brand); line-height:var(--strip-height); will-change:transform; visibility:hidden; transform:translateX(var(--start,0px)); animation:marqueePx var(--strip-speed) linear infinite; }
+    @keyframes marqueePx{ from{ transform:translateX(var(--start)); } to{ transform:translateX(var(--end)); } }
+
+    .user-bar{ display:flex; justify-content:space-between; align-items:center; height:30px; line-height:30px; padding:2px 35px 0; font-size:11px; }
+    .user-info{ color:rgba(0,0,0,.55) }
+    .logout-link a{ color:var(--brand); text-decoration:underline }
+    .logout-link a:hover{ color:#4040ff }
+
+    .container{ flex:1 1 auto; min-height:0; padding:12px 35px 18px; box-sizing:border-box; display:flex; flex-direction:column; gap:12px; }
+
+    .card{ border:1px solid var(--border); border-radius:10px; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.06); padding:14px; max-width:900px; width:min(900px,100%); margin:0 auto; }
+    .card h3{ margin:0 0 6px; font-size:12px; text-align:center; font-weight:700 }
+    .brand-line{ display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:8px; }
+    .logo{ width:36px; height:36px; border-radius:50%; background:radial-gradient(circle at 30% 30%,#a0b6ff,#3b5bff); display:grid; place-items:center; color:#fff; font-weight:700; letter-spacing:.5px; }
+    .brand-title{ font-size:14px; font-weight:700; letter-spacing:.3px; }
+
+    .player{ display:grid; grid-template-columns: auto 1fr auto; gap:10px; align-items:center; }
+    .play-btn{ width:56px; height:56px; border-radius:50%; border:1px solid var(--border); display:grid; place-items:center; cursor:pointer; background:#f9f9ff; }
+    .play-btn:hover{ background:#eef2ff }
+    .meta{ min-height:28px; display:flex; flex-direction:column; justify-content:center; gap:2px; }
+    .title{ font-weight:600 }
+    .subtitle{ opacity:.75 }
+    .actions{ display:flex; align-items:center; gap:8px; }
+    .controls{ display:flex; align-items:center; gap:8px; justify-content:center; margin-top:8px; }
+    .range{ -webkit-appearance:none; width:140px; height:4px; background:#e5e5e5; border-radius:999px; outline:none; }
+    .range::-webkit-slider-thumb{ -webkit-appearance:none; width:12px; height:12px; border-radius:50%; background:#3b5bff; cursor:pointer; }
+
+    .grid{ display:grid; grid-template-columns: 1fr; gap:12px; max-width:900px; width:min(900px,100%); margin:0 auto; }
+    @media(min-width:800px){ .grid{ grid-template-columns:1fr 1fr } }
+    .panel{ border:1px solid var(--border); border-radius:8px; background:#fff; padding:10px; }
+    .panel h4{ margin:0 0 6px; font-size:12px }
+    .list{ margin:0; padding-left:16px } .list li{ margin:3px 0 }
+
+    .notas-ssi{ font-family:var(--font-family-base); font-size:var(--font-size-base); background:#fff; border:1px solid var(--border); border-radius:3px; margin:8px 35px 10px; overflow:hidden; max-width:900px; width:min(900px,100%); align-self:center; }
+    .notas-ssi .head{ background:linear-gradient(#fffaf0,#fff5e1); color:#b25a00; font-weight:bold; padding:3px 8px; border-bottom:1px solid #e6d3a7; }
+    .notas-ssi .body{ padding:6px 8px }
+    .notas-ssi a{ color:var(--brand); text-decoration:underline }
+
+    .rights{ text-align:center; font-size:11px; color:#a0a0a0; margin:4px 50px 24px }
+
+    @font-face{ font-family:"Arial-BoldMT"; src:local("Arial"); font-weight:400; font-style:normal; font-display:swap }
+    @font-face{ font-family:"Arial-BoldMT"; src:local("Arial Bold"),local("Arial"); font-weight:700; font-style:normal; font-display:swap }
+  </style>
+</head>
+<body>
+  <div class="moving-strip"><span class="scroll-text" id="ticker">MAPPLES RADIO — en vivo • música y mensajes • Lima, Perú • Síguenos en Instagram @mapples.radio • 24/7 </span></div>
+
+  <div class="user-bar sharp-text">
+    <div class="user-info" id="userInfo">Usuario: INVITADO</div>
+    <div class="logout-link"><a href="#" id="fakeLogout">Cerrar&nbsp;sesión</a></div>
+  </div>
+
+  <h2 class="sharp-text" style="text-align:center; font-weight:700; font-size:12px; letter-spacing:.15px; margin:4px 0 0;">MAPPLES RADIO — SEÑAL EN VIVO</h2>
+
+  <div class="container">
+    <div class="card" role="region" aria-label="Reproductor de Mapples Radio">
+      <div class="brand-line">
+        <div class="logo" aria-hidden="true">MR</div>
+        <div class="brand-title">Mapples Radio</div>
+      </div>
+
+      <div class="player">
+        <button id="btnPlay" class="play-btn" aria-label="Reproducir/Pausar">
+          <i class="fa-solid fa-play"></i>
+        </button>
+        <div class="meta">
+          <div class="title" id="npTitle">En vivo</div>
+          <div class="subtitle" id="npSub">Listo para reproducir</div>
+        </div>
+        <div class="actions">
+          <button class="btn" id="btnStop" title="Detener" aria-label="Detener"><i class="fa-solid fa-stop"></i></button>
+          <button class="btn" id="btnMute" title="Silenciar" aria-label="Silenciar"><i class="fa-solid fa-volume-xmark"></i></button>
+        </div>
+      </div>
+
+      <div class="controls">
+        <i class="fa-solid fa-volume-low" aria-hidden="true"></i>
+        <input id="vol" class="range" type="range" min="0" max="1" step="0.01" value="0.9" aria-label="Volumen" />
+        <i class="fa-solid fa-volume-high" aria-hidden="true"></i>
+      </div>
+
+      <audio id="radio" preload="none" crossorigin="anonymous"></audio>
+    </div>
+
+    <div class="grid">
+      <div class="panel">
+        <h4>Programación (referencial)</h4>
+        <ul class="list" id="sched">
+          <li><b>06:00–09:00</b> — Despertador Mapples (pop y noticias)</li>
+          <li><b>09:00–12:00</b> — Hits del Momento</li>
+          <li><b>12:00–14:00</b> — Urban Flow</li>
+          <li><b>14:00–18:00</b> — Tardes Mapples</li>
+          <li><b>18:00–22:00</b> — Noche Latina</li>
+          <li><b>22:00–06:00</b> — Chill & Lo‑Fi</li>
+        </ul>
+      </div>
+
+      <div class="panel">
+        <h4>Atajos</h4>
+        <ul class="list">
+          <li><a id="openPlayer" href="#">Abrir en ventana emergente</a></li>
+          <li><a id="copyLink" href="#">Copiar enlace del stream</a></li>
+        </ul>
+        <div style="opacity:.7; margin-top:6px">Consejo: por políticas del navegador, el audio con sonido necesita un clic del usuario.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="notas-ssi sharp-text" id="notaSsi">
+    <div class="head">Notas</div>
+    <div class="body">
+      <ul>
+        <li>Reemplaza <code>STREAM_URL</code> con la URL de tu servidor (Icecast/Shoutcast/HLS).</li>
+        <li>Si usas Icecast, puedes configurar <code>METADATA_URL</code> (p.ej. <code>https://tu-servidor/status-json.xsl</code>) para mostrar “Ahora suena”.</li>
+        <li>Autoplay: el navegador bloquea reproducción con sonido hasta que el usuario interactúa.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="rights">© <span id="year"></span> Mapples Radio — Todos los derechos reservados.</div>
+
+  <script>
+    /* ========== CONFIG ==========
+     CAMBIA esto por tu stream real (mp3/aac/ogg o .m3u8) */
+    const STREAM_URL   = "https://your-stream.example.com/stream.mp3"; // <<— REEMPLAZAR
+    // (Opcional, Icecast): JSON de estado para “Ahora suena”
+    const METADATA_URL = ""; // p.ej.: "https://tu-icecast/status-json.xsl"
+
+    // ===== Marquee =====
+    (function initTicker(){
+      const el = document.getElementById('ticker');
+      const wrapW = el.parentElement.clientWidth;
+      const textW = el.getBoundingClientRect().width;
+      const start = wrapW;
+      const end   = -textW - 24;
+      el.style.setProperty('--start', start + 'px');
+      el.style.setProperty('--end',   end   + 'px');
+      el.style.visibility = 'visible';
+    })();
+
+    // ===== Player =====
+    const audio   = document.getElementById('radio');
+    const btnPlay = document.getElementById('btnPlay');
+    const btnStop = document.getElementById('btnStop');
+    const btnMute = document.getElementById('btnMute');
+    const vol     = document.getElementById('vol');
+    const npTitle = document.getElementById('npTitle');
+    const npSub   = document.getElementById('npSub');
+
+    let loaded = false;
+    function ensureSrc(){
+      if (loaded) return;
+      audio.src = STREAM_URL;
+      loaded = true;
+    }
+
+    btnPlay.addEventListener('click', async () => {
+      ensureSrc();
+      if (audio.paused) {
+        try {
+          await audio.play();
+          btnPlay.innerHTML = '<i class="fa-solid fa-pause"></i>';
+          npSub.textContent = 'Reproduciendo…';
+        } catch (e) {
+          npSub.textContent = 'Pulsa Play para iniciar';
+          console.error(e);
+        }
+      } else {
+        audio.pause();
+        btnPlay.innerHTML = '<i class="fa-solid fa-play"></i>';
+        npSub.textContent = 'Pausado';
+      }
+    });
+
+    btnStop.addEventListener('click', () => {
+      audio.pause();
+      audio.removeAttribute('src');
+      audio.load();
+      loaded = false;
+      btnPlay.innerHTML = '<i class="fa-solid fa-play"></i>';
+      npSub.textContent = 'Detenido';
+    });
+
+    btnMute.addEventListener('click', () => {
+      audio.muted = !audio.muted;
+      btnMute.innerHTML = audio.muted ? '<i class="fa-solid fa-volume-xmark"></i>' : '<i class="fa-solid fa-volume-high"></i>';
+    });
+
+    vol.addEventListener('input', e => { audio.volume = +e.target.value; });
+    audio.volume = +vol.value;
+
+    audio.addEventListener('playing', () => { npSub.textContent = 'En vivo'; });
+    audio.addEventListener('waiting', () => { npSub.textContent = 'Conectando…'; });
+    audio.addEventListener('stalled', () => { npSub.textContent = 'Reconectando…'; });
+    audio.addEventListener('error', () =>   { npSub.textContent = 'Error de reproducción'; });
+
+    // ===== Now Playing (Icecast opcional) =====
+    async function fetchNowPlaying(){
+      if (!METADATA_URL) return;
+      try{
+        const r = await fetch(METADATA_URL + (METADATA_URL.includes('?')?'&':'?') + 't=' + Date.now(), {cache:'no-store'});
+        if(!r.ok) return;
+        const j = await r.json();
+        const srcs = j.icestats?.source; if(!srcs) return;
+        const arr = Array.isArray(srcs) ? srcs : [srcs];
+        const s = arr.find(o => (o.listener_peak !== undefined));
+        const title = s?.title || s?.server_name || 'En vivo';
+        npTitle.textContent = title;
+      }catch(e){ /* silencioso */ }
+    }
+    setInterval(fetchNowPlaying, 15000);
+    fetchNowPlaying();
+
+    // Util
+    document.getElementById('year').textContent = new Date().getFullYear();
+    document.getElementById('openPlayer').addEventListener('click', e => {
+      e.preventDefault();
+      window.open(window.location.href, 'mapples-radio', 'width=420,height=300');
+    });
+    document.getElementById('copyLink').addEventListener('click', async e => {
+      e.preventDefault();
+      try{ await navigator.clipboard.writeText(STREAM_URL); alert('Enlace de stream copiado'); }catch{ }
+    });
+    document.getElementById('fakeLogout').addEventListener('click', e => { e.preventDefault(); alert('Solo decorativo :)'); });
+  </script>
+</body>
+</html>
